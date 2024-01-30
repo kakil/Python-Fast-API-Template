@@ -1,5 +1,8 @@
-
+# Exclude Virtual environments
 /venv
+/apienv3
+/apienv4
+
 # Exclude .vscode settings
 .vscode/
 
@@ -64,3 +67,8 @@ coverage.xml
 docs/_build/
 
 *.pyc
+
+#configuration
+config.json
+
+
