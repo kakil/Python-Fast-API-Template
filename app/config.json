@@ -1,7 +1,7 @@
 {
     "API_KEY_HEADER_NAME": "x-api-key",
-    "API_KEY_PASSPHRASE": "123456",
-    "OPENAI_API_KEY": "sk-XXX",
+    "API_KEY_PASSPHRASE": "6336",
+    "OPENAI_API_KEY": "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",
     "LLM_MAX_RETRIES": 5,
     "LLM_RETRY_DELAY": 1,
     "C1": "",

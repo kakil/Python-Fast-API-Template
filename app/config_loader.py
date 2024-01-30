@@ -4,7 +4,9 @@ import logging
 logger = logging.getLogger("AppLogger")
 
 def load_config():
-    config_path = os.path.join("app", "config.json")
+    # config_path = os.path.join("app", "config.json")
+    config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "config.json"))
+
     
     if not os.path.exists(config_path):
         logger.error(f"Config file not found at {config_path}")
@@ -12,7 +14,11 @@ def load_config():
 
     try:
         with open(config_path, "r") as f:
-            return json.load(f)
+            # return json.load(f)
+            config = json.load(f)
+            logger.debug(f"Loaded config: {config}")  # Add this line to print the loaded config
+            return config 
+
     except FileNotFoundError:
         logger.error(f"Config file not found at {config_path}")
     except json.JSONDecodeError:

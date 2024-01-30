@@ -1,3 +1,6 @@
+import uvicorn
+import ssl 
+
 # optimized
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -17,18 +20,19 @@ from slowapi.errors import RateLimitExceeded
 from starlette.requests import Request
 from starlette.types import ASGIApp
 
-from .routers import tools
-from .helpers import record_log, LogLevel,get_calling_function_name ,get_calling_module_name
+from routers import tools
+from helpers import record_log, LogLevel,get_calling_function_name ,get_calling_module_name
 
-
+# Add a global flag to control API key validation
+DISABLE_API_KEY_VALIDATION = False
 
 # Assumed imports from your other modules
-from .routers import (
+from routers import (
     tools
 )
-from .mongo import establish_connection, mongo_db_instance
-from .logger_setup import initialize_logger
-from .config_loader import config
+from mongo import establish_connection, mongo_db_instance
+from logger_setup import initialize_logger
+from config_loader import config
 
 
 
@@ -37,20 +41,23 @@ API_KEY_NAME = config["API_KEY_HEADER_NAME"]
 API_KEY = config["API_KEY_PASSPHRASE"]
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=True)
 
-WHITELISTED_PATHS = ["/customdocs", "/openapi.json", "/"]
+WHITELISTED_PATHS = ["/customdocs", "/openapi.json", "/", "/tool/hello"]
 
 
 
 app = FastAPI(
     title="API System",
-    description="Private APIs For YourName",
+    description="Private APIs For KitwanaAkil.com",
     version="1.0.0",
     servers=[
-        {"url": "https://api.url/", "description": "Production server"},
+        {"url": "https://akilapi.kitwanaakil.com", "description": "Production server"},
         {"url": "http://127.0.0.1:8000", "description": "Development server"}
     ],
     docs_url="/customdocs"
 )
+
+ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ssl_context.load_cert_chain('/etc/ssl/certs/kakilsite.crt', keyfile='/etc/ssl/certs/kakilsit.key')
 
 #app = FastAPI(docs_url="/customdocs")
 
@@ -92,6 +99,11 @@ app.add_middleware(LogMiddleware)
 
 class APIKeyMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        
+        if DISABLE_API_KEY_VALIDATION:
+            # If the flag is set to True, skip API key validation
+            return await call_next(request)
+        
         if request.url.path not in WHITELISTED_PATHS:
             api_key = request.headers.get(API_KEY_NAME)
             if api_key != API_KEY:
@@ -206,3 +218,10 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 
 app.include_router(tools.router, tags=["tools"])
+
+if __name__ == "__main__":
+    
+    # Temporarily disable API key validation
+    DISABLE_API_KEY_VALIDATION = True
+    
+    uvicorn.run(app, host="0.0.0.0", port=8000, ssl=ssl_context)
