@@ -1,7 +1,7 @@
 # Exclude Virtual environments
 /venv
-/apienv3
-/apienv4
+apienv3/
+apienv4/
 
 # Exclude .vscode settings
 .vscode/
@@ -68,7 +68,9 @@ docs/_build/
 
 *.pyc
 
-#configuration
+# My configuration
 config.json
 
-
+# Other
+kscripts.sh 
+uvicorn.log
